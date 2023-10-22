@@ -5,6 +5,7 @@ export const defaultTextStyle = {
     fill: 'white',
     stroke: 'black',
     strokeThickness: 3,
+    trim: true,
     dropShadow: true,
     dropShadowBlur: 3,
     dropShadowDistance: 3
