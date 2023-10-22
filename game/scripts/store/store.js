@@ -1,6 +1,8 @@
 import Vuex from 'vuex'
 import axios from 'axios'
 
+import * as StandinRouter from '../game_logic/standin_router';
+
 import * as Wager from './wager'
 
 export const MUTATIONS = {
@@ -20,7 +22,6 @@ export const ACTIONS = {
     WITHDRAW: 'WITHDRAW',
     FETCH_SESSION_DATA: 'FETCH_SESSION_DATA',
 }
-
 
 const store = new Vuex.Store({
     state: () => ({
@@ -57,25 +58,30 @@ const store = new Vuex.Store({
     actions: {
         [ACTIONS.CONNECT]: ({ commit }) => {
             return new Promise((resolve, reject) => {
-                const { walletAddress } = window
-                if (walletAddress === undefined) {
-                    alert('No Wallet found - contact devs')
-                    reject()
-                } else {
-                    commit(MUTATIONS.SET_WALLET, walletAddress)
-                    const requestConfig = {
-                        url: `/hatchscratcher/connect/${walletAddress}`,
-                        baseURL: import.meta.env.VITE_API_URL,
-                        method: 'POST',
-                        withCredentials: true
-                    }
-                    axios(requestConfig)
-                        .then(response => {
-                            commit(MUTATIONS.SET_SESSION, response.data)
-                            resolve()
-                        })
-                        .catch(reject)
-                }
+                const res = StandinRouter.connect();
+                commit(MUTATIONS.SET_SESSION, res);
+                commit(MUTATIONS.SET_WALLET, res._id);
+                resolve();
+
+            //     const { walletAddress } = window
+            //     if (walletAddress === undefined) {
+            //         alert('No Wallet found - contact devs')
+            //         reject()
+            //     } else {
+            //         commit(MUTATIONS.SET_WALLET, walletAddress)
+            //         const requestConfig = {
+            //             url: `/hatchscratcher/connect/${walletAddress}`,
+            //             baseURL: import.meta.env.VITE_API_URL,
+            //             method: 'POST',
+            //             withCredentials: true
+            //         }
+            //         axios(requestConfig)
+            //             .then(response => {
+            //                 commit(MUTATIONS.SET_SESSION, response.data)
+            //                 resolve()
+            //             })
+            //             .catch(reject)
+            //     }
             })
         },
         [ACTIONS.FETCH_SESSION_DATA]: ({ commit }) => {
@@ -94,25 +100,38 @@ const store = new Vuex.Store({
         },
         [ACTIONS.PLAY]: ({ commit, state }) => {
             return new Promise((resolve, reject) => {
-                const requestConfig = {
-                    baseURL: import.meta.env.VITE_API_URL,
-                    url: '/hatchscratcher/session/play',
-                    method: 'POST',
-                    withCredentials: true,
-                    data: {
+                const req = {
+                    user: state.session,
+                    body: {
                         bet: state.wager.wager,
                         board: state.wager.guessBoard
                     }
                 }
-                axios(requestConfig)
-                    .then(response => {
-                        const { results, user } = response.data
-                        commit(MUTATIONS.SET_ROUND_RESULTS, results)
-                        commit(MUTATIONS.SET_BALANCE, user.balance)
-                        commit(MUTATIONS.SET_ROLLOVER, user.rollover)
-                        resolve()
-                    })
-                    .catch(reject)
+                const { results, user } = StandinRouter.play(req);
+                commit(MUTATIONS.SET_ROUND_RESULTS, results)
+                commit(MUTATIONS.SET_BALANCE, user.balance)
+                commit(MUTATIONS.SET_ROLLOVER, user.rollover)
+                resolve();
+
+                // const requestConfig = {
+                //     baseURL: import.meta.env.VITE_API_URL,
+                //     url: '/hatchscratcher/session/play',
+                //     method: 'POST',
+                //     withCredentials: true,
+                //     data: {
+                //         bet: state.wager.wager,
+                //         board: state.wager.guessBoard
+                //     }
+                // }
+                // axios(requestConfig)
+                //     .then(response => {
+                //         const { results, user } = response.data
+                //         commit(MUTATIONS.SET_ROUND_RESULTS, results)
+                //         commit(MUTATIONS.SET_BALANCE, user.balance)
+                //         commit(MUTATIONS.SET_ROLLOVER, user.rollover)
+                //         resolve()
+                //     })
+                //     .catch(reject)
             })
         },
         [ACTIONS.WITHDRAW]: ({ dispatch, commit, state }) => {
