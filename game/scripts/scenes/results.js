@@ -98,7 +98,7 @@ export default class ResultsScene extends Scene {
             modalContainer.addChild(tContainer)
             tContainer.position.set(
                 90,
-                150 + tContainer.height * index + index
+                150 + (34 * index)
             )
         })
         // Wager Texts
