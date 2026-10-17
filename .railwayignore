@@ -1,0 +1,7 @@
+# What `railway up` leaves out of the upload (on top of .gitignore). Anchored to the repo root.
+/.git
+/.railway/node_modules
+/game/node_modules
+/game/dist
+/server
+/screenshots
