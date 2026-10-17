@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@pixi/sound": "^4.2.0",
+    "@pixi/unsafe-eval": "6.2.2",
     "axios": "^0.25.0",
     "decimal.js": "^10.4.3",
     "dotenv": "^16.0.0",

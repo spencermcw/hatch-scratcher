@@ -1,8 +1,10 @@
 // require('dotenv').config()
 import {
     Application,
+    ShaderSystem,
     utils as PIXIutils
 } from 'pixi.js'
+import { install as installUnsafeEvalPatch } from '@pixi/unsafe-eval'
 import * as WebFont from 'webfontloader'
 import SceneManager from "./scripts/lib/sceneManager"
 import ConnectScene from "./scripts/scenes/connect"
@@ -14,11 +16,15 @@ import LoadingScene from "./scripts/scenes/loading"
 import RolloverScene from "./scripts/scenes/rollover"
 import store from './scripts/store/store'
 
+// Let Pixi run under a CSP without 'unsafe-eval' (it otherwise compiles shader syncs with new Function)
+installUnsafeEvalPatch({ ShaderSystem })
+
 // Font Loading
 WebFont.load({
     custom: {
+        // style.css declares the @font-face. `urls` takes stylesheets, not font files: listing the
+        // .ttf there made the browser reject it as a stylesheet (a console error on every load).
         families: ['Ghoulish'],
-        urls: [import.meta.env.BASE_URL + 'assets/GhoulFriAOE.ttf']
     }
 })
 

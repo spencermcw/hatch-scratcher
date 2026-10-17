@@ -353,6 +353,10 @@ export default class WagerScene extends Scene {
             // height: 50
         })
         container.addChild(withdrawButton)
+        // The standalone demo has no API server, so Withdraw (a POST to VITE_API_URL) can only fail.
+        // Keep the button for layout but hide it and stop it taking input.
+        withdrawButton.visible = false
+        withdrawButton.interactive = false
         withdrawButton.on('pointerup', () => {
             audio.playAudio(audio.audioFiles.popclick)
             this.store.commit(MUTATIONS.SET_LOADING_TEXT, "Processing Withdrawal...")
@@ -372,8 +376,10 @@ export default class WagerScene extends Scene {
             ...defaultTextStyle,
         })
         container.addChild(infoText)
+        // With Withdraw hidden, the balance lines start where the button was.
+        const textX = withdrawButton.visible ? withdrawButton.x + withdrawButton.width + 10 : withdrawButton.x
         infoText.position.set(
-            withdrawButton.x + withdrawButton.width + 10,
+            textX,
             withdrawButton.y - 5
         )
         // Rollover
@@ -382,7 +388,7 @@ export default class WagerScene extends Scene {
         const rolloverText = new Text(`Rollover: ${formattedRollover} $ZOO Remaining`, { ...defaultTextStyle })
         container.addChild(rolloverText)
         rolloverText.position.set(
-            withdrawButton.x + withdrawButton.width + 10,
+            textX,
             infoText.y + infoText.height
         )
         // Wallet
